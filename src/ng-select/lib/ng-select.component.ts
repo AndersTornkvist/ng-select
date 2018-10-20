@@ -104,6 +104,8 @@ export class NgSelectComponent implements OnDestroy, OnChanges, AfterViewInit, C
     @Input() searchFn = null;
     @Input() trackByFn = null;
     @Input() clearOnBackspace = true;
+    @Input() excludeGroupsFromDefaultSelection = false;
+
     @Input() labelForId = null;
     @Input() inputAttrs: { [key: string]: string } = {};
     @Input() tabIndex: number;
