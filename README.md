@@ -157,6 +157,7 @@ map: {
 | Input  | Type | Default | Required | Description |
 | ------------- | ------------- | ------------- | ------------- | ------------- |
 | [addTag] | `boolean \| ((term: string) => any \| Promise<any>)`  | `false` | no | Allows to create custom options. |
+| [addTagAlways] | `boolean | `false` | no | Allows to create custom options even when loading items or match exists. Default `false`. Use together with [addTag] if you want to use custom add function. |
 | addTagText | `string` | `Add item` | no | Set custom text when using tagging |
 | appearance | `string` | `underline` | no | Allows to select dropdown appearance. Set to `outline` to add border instead of underline (applies only to Material theme) |
 | appendTo | `string` |  null | no | Append dropdown to body or any other element using css selector. For correct positioning `body` should have `position:relative` |

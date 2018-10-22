@@ -2464,6 +2464,56 @@ describe('NgSelectComponent', () => {
                 expect(select.showAddTag).toBeFalsy();
             });
         });
+
+        describe('show add tag always', () => {
+            let select: NgSelectComponent;
+            let fixture: ComponentFixture<NgSelectTestCmp>;
+            beforeEach(() => {
+                fixture = createTestingModule(
+                    NgSelectTestCmp,
+                    `<ng-select [items]="cities"
+                    bindLabel="name"
+                    [multiple]="true"
+                    [addTagAlways]="true"
+                    placeholder="select value"
+                    [(ngModel)]="selectedCities">
+                </ng-select>`);
+                select = fixture.componentInstance.select;
+            });
+
+            it('should be false when there is no search term', () => {
+                select.searchTerm = null;
+                expect(select.showAddTag).toBeFalsy();
+            });
+
+            it('should be true when term not exists among items', () => {
+                select.searchTerm = 'Vil';
+                expect(select.showAddTag).toBeTruthy();
+            });
+
+            it('should be true even when term exists among items', () => {
+                select.searchTerm = 'Vilnius';
+                expect(select.showAddTag).toBeTruthy();
+            });
+
+            it('should be true even when term exists among selected items', fakeAsync(() => {
+                fixture.componentInstance.selectedCities = [{name: 'Palanga', id: 9}];
+                select.searchTerm = 'Palanga';
+                select.hideSelected = true;
+                select.isOpen = true;
+                tickAndDetectChanges(fixture);
+                expect(select.showAddTag).toBeTruthy();
+            }));
+
+            it('should be true even when term exists among selected items and select is closed', fakeAsync(() => {
+                fixture.componentInstance.selectedCities = [{name: 'Palanga', id: 9}];
+                select.searchTerm = 'Palanga';
+                select.hideSelected = false;
+                select.isOpen = false;
+                tickAndDetectChanges(fixture);
+                expect(select.showAddTag).toBeTruthy();
+            }));
+        });
     });
 
     describe('Placeholder', () => {

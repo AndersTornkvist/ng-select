@@ -83,6 +83,7 @@ export class NgSelectComponent implements OnDestroy, OnChanges, AfterViewInit, C
     @Input() notFoundText: string;
     @Input() typeToSearchText: string;
     @Input() addTagText: string;
+    @Input() addTagAlways = false;
     @Input() loadingText: string;
     @Input() clearAllText: string;
     @Input() appearance: string;
@@ -259,6 +260,11 @@ export class NgSelectComponent implements OnDestroy, OnChanges, AfterViewInit, C
         }
         if (changes.isOpen) {
             this._manualOpen = isDefined(changes.isOpen.currentValue);
+        }
+        if (changes.addTagAlways) {
+            if (this.addTagAlways && !this.addTag) {
+                this.addTag = true;
+            }
         }
     }
 
@@ -526,10 +532,17 @@ export class NgSelectComponent implements OnDestroy, OnChanges, AfterViewInit, C
             return false;
         }
 
+        if (!this.addTag) {
+            return false;
+        }
+
+        if (this.addTagAlways) {
+            return true;
+        }
+
         const term = this.searchTerm.toLowerCase().trim();
-        return this.addTag &&
-            (!this.itemsList.filteredItems.some(x => x.label.toLowerCase() === term) &&
-                (!this.hideSelected && this.isOpen || !this.selectedItems.some(x => x.label.toLowerCase() === term))) &&
+        return (!this.itemsList.filteredItems.some(x => x.label.toLowerCase() === term) &&
+            (!this.hideSelected && this.isOpen || !this.selectedItems.some(x => x.label.toLowerCase() === term))) &&
             !this.loading;
     }
 
