@@ -116,6 +116,7 @@ map: {
 | Input  | Type | Default | Required | Description |
 | ------------- | ------------- | ------------- | ------------- | ------------- |
 | [addTag] | `boolean \| ((term: string) => any \| Promise<any>)`  | `false` | no | Allows to create custom options. |
+| [addTagAlways] | `boolean | `false` | no | Allows to create custom options even when loading items or match exists. Default `false`. Use together with [addTag] if you want to use custom add function. |
 | addTagText | `string` | `Add item` | no | Set custom text when using tagging |
 | appendTo | `string` |  null | no | Append dropdown to body or any other element using css selector. For correct positioning `body` should have `position:relative` |
 | bindValue  | `string` | `-` | no | Object property to use for selected model. By default binds to whole object. |
