@@ -102,6 +102,7 @@ export class NgSelectComponent implements OnDestroy, OnChanges, AfterViewInit, C
     @Input() selectableGroup = false;
     @Input() selectableGroupAsModel = true;
     @Input() searchFn = null;
+    @Input() clearOnBackspace = true;
     @Input() excludeGroupsFromDefaultSelection = false;
 
     @Input() labelForId = null;
@@ -175,7 +176,7 @@ export class NgSelectComponent implements OnDestroy, OnChanges, AfterViewInit, C
 
     private readonly _destroy$ = new Subject<void>();
     private readonly _keyPress$ = new Subject<string>();
-    private _onChange = (_: NgOption) => { };
+    private _onChange = (_: any) => { };
     private _onTouched = () => { };
 
     clearItem = (item: any) => {
@@ -186,6 +187,7 @@ export class NgSelectComponent implements OnDestroy, OnChanges, AfterViewInit, C
     constructor(
         @Attribute('class') public classes: string,
         @Attribute('tabindex') public tabIndex: string,
+        @Attribute('autofocus') private autoFocus: any,
         config: NgSelectConfig,
         @Inject(SELECTION_MODEL_FACTORY) newSelectionModel: SelectionModelFactory,
         _elementRef: ElementRef,
@@ -221,7 +223,7 @@ export class NgSelectComponent implements OnDestroy, OnChanges, AfterViewInit, C
             this._setItems(changes.items.currentValue || []);
         }
         if (changes.isOpen) {
-            this._manualOpen = true;
+            this._manualOpen = isDefined(changes.isOpen.currentValue);
         }
         if (changes.addTagAlways) {
             if (this.addTagAlways && !this.addTag) {
@@ -233,6 +235,10 @@ export class NgSelectComponent implements OnDestroy, OnChanges, AfterViewInit, C
     ngAfterViewInit() {
         if (this.items && this.items.length === 0) {
             this._setItemsFromNgOptions();
+        }
+
+        if (isDefined(this.autoFocus)) {
+            this.focus();
         }
     }
 
@@ -281,16 +287,17 @@ export class NgSelectComponent implements OnDestroy, OnChanges, AfterViewInit, C
         }
         $event.stopPropagation();
 
-        if (target.className === 'ng-clear') {
+        if (target.classList.contains('ng-clear-wrapper')) {
             this.handleClearClick();
             return;
         }
-        if (target.className === 'ng-arrow-wrapper') {
+
+        if (target.classList.contains('ng-arrow-wrapper')) {
             this.handleArrowClick();
             return;
         }
 
-        if (target.className.includes('ng-value-icon')) {
+        if (target.classList.contains('ng-value-icon')) {
             return;
         }
 
@@ -668,13 +675,13 @@ export class NgSelectComponent implements OnDestroy, OnChanges, AfterViewInit, C
         const model = [];
         for (const item of this.selectedItems) {
             if (this.bindValue) {
-                let resolvedValue = null;
+                let value = null;
                 if (item.children) {
-                    resolvedValue = item.value[<string>this.groupBy];
+                    value = item.value[<string>this.groupBy];
                 } else {
-                    resolvedValue = this.itemsList.resolveNested(item.value, this.bindValue);
+                    value = this.itemsList.resolveNested(item.value, this.bindValue);
                 }
-                model.push(resolvedValue);
+                model.push(value);
             } else {
                 model.push(item.value);
             }
@@ -794,7 +801,7 @@ export class NgSelectComponent implements OnDestroy, OnChanges, AfterViewInit, C
     }
 
     private _handleBackspace() {
-        if (this.filterValue || !this.clearable || !this.hasValue) {
+        if (this.filterValue || !this.clearable || !this.clearOnBackspace || !this.hasValue) {
             return;
         }
 
